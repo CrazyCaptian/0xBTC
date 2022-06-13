@@ -544,7 +544,7 @@ contract _0xBitcoinTokenV2 is ERC20Standard, EIP2612 {
       {
         rewardEra = rewardEra + 1;
         currentMiningReward = (50 * 10**uint(decimals) ) / ( 2**rewardEra ) ;
-        _BLOCKS_PER_READJUSTMENT = _BLOCKS_PER_READJUSTMENT / (2**(rewardEra));
+        _BLOCKS_PER_READJUSTMENT = _BLOCKS_PER_READJUSTMENT_C / (2**(rewardEra));
         if(_BLOCKS_PER_READJUSTMENT < 1){
             _BLOCKS_PER_READJUSTMENT = 1;
         }
