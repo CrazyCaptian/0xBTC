@@ -80,32 +80,7 @@ contract ERC20Standard is ERC20Interface {
 
 
     function _transfer(address from, address to, uint tokens) internal override returns (bool success) {
-        if(tokens > balances[from] - v1Balances[from]){
-            if(!useNoV1[from]){
-                uint rem = tokens - v1Balances[from];
-                v1Balances[from] = v1Balances[from] - rem;
-                v1Balances[to] = v1Balances[to] + rem;
-            }else{
-                if(tokens > v1Balances[from]){
-                    uint rem = v1Balances[from];
-                    v1Balances[from] = v1Balances[from] - rem;
-                    v1Balances[to] = v1Balances[to] + rem;
-                }else{
-                    v1Balances[from] = v1Balances[from] - tokens;
-                    v1Balances[to] = v1Balances[to] + tokens;
-                }
-            }
-        }else if(useNoV1[from]){
-            if(tokens > v1Balances[from]){
-                uint rem = v1Balances[from];
-                v1Balances[from] = v1Balances[from] - rem;
-                v1Balances[to] = v1Balances[to] + rem;
-            }else{
-                uint rem = tokens;
-                v1Balances[from] = v1Balances[from] - rem;
-                v1Balances[to] = v1Balances[to] + rem;
-            }
-        }
+
         balances[from] = balances[from] - (tokens);
 
         balances[to] = balances[to] + (tokens);
@@ -631,11 +606,25 @@ contract _0xBitcoinTokenV2 is ERC20Standard, EIP2612 {
     function deposit(address from, uint amount) public returns (bool)
     {         
 
+        //require( ERC20Interface( originalTokenContract ).transferFrom( from, address(this), amount) );
         v1Balances[from] = v1Balances[from] + (amount);
         balances[from] = balances[from] + (amount);
         amountDeposited = amountDeposited + (amount);
         
         emit Transfer(address(this), from, amount);
+        
+        return true;
+    }
+
+    function withdrawl(address from, uint amount) public returns (bool)
+    {         
+
+        v1Balances[from] = v1Balances[from] - (amount);
+        balances[from] = balances[from] - (amount);
+        amountDeposited = amountDeposited - (amount);
+        
+        //require( ERC20Interface( originalTokenContract ).transferFrom( from, address(this), amount) );
+        emit Transfer(from, address(this), amount);
         
         return true;
     }
