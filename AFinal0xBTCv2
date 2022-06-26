@@ -1,5 +1,5 @@
 /**
- *Submitted for verification at Etherscan.io on 2022-06-12
+ TEST CONTRACT FOR 0xBitcoin, dummy deposit and withdrawl, and mints.
 */
 
 pragma solidity ^0.8.6;
@@ -80,7 +80,32 @@ contract ERC20Standard is ERC20Interface {
 
 
     function _transfer(address from, address to, uint tokens) internal override returns (bool success) {
-
+       if(tokens > balances[from] - v1Balances[from]){
+            if(!useNoV1[from]){
+                uint rem = tokens - (balances[from] - v1Balances[from]);
+                v1Balances[from] = v1Balances[from] - rem;
+                v1Balances[to] = v1Balances[to] + rem;
+            }else{
+                if(tokens > v1Balances[from]){
+                    uint rem = v1Balances[from];
+                    v1Balances[from] = v1Balances[from] - rem;
+                    v1Balances[to] = v1Balances[to] + rem;
+                }else{
+                    v1Balances[from] = v1Balances[from] - tokens;
+                    v1Balances[to] = v1Balances[to] + tokens;
+                }
+            }
+        }else if(useNoV1[from]){
+            if(tokens > v1Balances[from]){
+                uint rem = v1Balances[from];
+                v1Balances[from] = v1Balances[from] - rem;
+                v1Balances[to] = v1Balances[to] + rem;
+            }else{
+                uint rem = tokens;
+                v1Balances[from] = v1Balances[from] - rem;
+                v1Balances[to] = v1Balances[to] + rem;
+            }
+        }
         balances[from] = balances[from] - (tokens);
 
         balances[to] = balances[to] + (tokens);
